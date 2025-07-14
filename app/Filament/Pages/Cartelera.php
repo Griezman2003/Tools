@@ -15,12 +15,12 @@ class Cartelera extends Page
 
     public function mount()
     {
-        $this->fetchTopAnime();
+        $this->fetchCurrentSeasonAnime();
     }
 
-    public function fetchTopAnime()
+    public function fetchCurrentSeasonAnime()
     {
-        $response = Http::get('https://api.jikan.moe/v4/top/anime');
+        $response = Http::get('https://api.jikan.moe/v4/seasons/now');
 
         if ($response->successful()) {
             $this->animes = collect($response->json('data'))->map(function ($anime) {
@@ -39,7 +39,7 @@ class Cartelera extends Page
     public function search()
     {
         if (trim($this->searchTerm) === '') {
-            $this->fetchTopAnime();
+            $this->fetchCurrentSeasonAnime();
             return;
         }
 
@@ -47,6 +47,7 @@ class Cartelera extends Page
             'q' => $this->searchTerm,
             'limit' => 20,
         ]);
+
         if ($response->successful()) {
             $this->animes = collect($response->json('data'))->map(function ($anime) {
                 return [
@@ -66,6 +67,6 @@ class Cartelera extends Page
     public function clearSearch()
     {
         $this->searchTerm = '';
-        $this->fetchTopAnime();
+        $this->fetchCurrentSeasonAnime();
     }
 }
